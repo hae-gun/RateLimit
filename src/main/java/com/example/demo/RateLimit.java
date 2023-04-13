@@ -10,7 +10,8 @@ import java.time.Duration;
 @Slf4j
 public class RateLimit {
     private final Bucket tokenBucket;
-    private final String NOT_WORKING = "IS NOT WORKING";
+    private static final String NOT_WORKING = "IS NOT WORKING";
+
     public RateLimit() {
         this.tokenBucket = tpsBucket("200");
     }
@@ -19,7 +20,7 @@ public class RateLimit {
 
         VerboseResult<ConsumptionProbe> verboseResult = tokenBucket.asVerbose().tryConsumeAndReturnRemaining(1);
         ConsumptionProbe probe = verboseResult.getValue();
-        if(!probe.isConsumed()){
+        if (!probe.isConsumed()) {
             return NOT_WORKING;
         }
         log.info("is Running {}", probe.getRemainingTokens());
@@ -27,7 +28,8 @@ public class RateLimit {
     }
 
     private Bucket tpsBucket(String tps) {
-        Bandwidth bandwidth = Bandwidth.classic(Integer.parseInt(tps), Refill.intervally(Integer.parseInt(tps), Duration.ofSeconds(1)));
+        Bandwidth bandwidth = Bandwidth.classic(Integer.parseInt(tps),
+                Refill.intervally(Integer.parseInt(tps), Duration.ofMillis(100L)));
         return bucket(bandwidth);
     }
 

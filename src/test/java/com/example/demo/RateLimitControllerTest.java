@@ -23,7 +23,8 @@ class RateLimitControllerTest {
     void request_rateLimit(){
         List<Runnable> threads = new ArrayList<>();
         AtomicInteger cnt= new AtomicInteger();
-        for(int i=0; i<1000; i++){
+        int req_cnt = 100000;
+        for(int i=0; i<req_cnt; i++){
             threads.add(
                     () -> {
                         String result = webTestClient.get()
@@ -41,5 +42,4 @@ class RateLimitControllerTest {
         threads.stream().parallel().forEach(Runnable::run);
         System.out.println(String.format("result is %d", cnt.get()));
     }
-
 }
